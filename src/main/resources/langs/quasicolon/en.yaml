@@ -1,2 +1,12 @@
 en:
-  "_": "_"
+  "remind.name": reminder
+  "remind.description": Reminders for you in the future
+  "remind.set.name": set
+  "remind.set.description": Sets a reminder for a point in the future
+  "remind.set.options.when.name": when
+  "remind.set.options.when.description": A date or time for when to remind you, i.e. "2 hours" or "2023-12-22"
+  "remind.set.options.note.name": note
+  "remind.set.options.note.description": An optional note to attach to the reminder
+  "remind.set.output.ok": "Alright, I''ll remind you {0} on {1}."
+  "remind.set.output.dm": "[{0}]({1}), you asked me to remind you:\n>>> {2}"
+  "remind.set.output.dm-no-note": "[{0}]({1}), you asked me to send you a reminder with no note."
