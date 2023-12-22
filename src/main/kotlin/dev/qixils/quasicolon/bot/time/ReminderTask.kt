@@ -17,11 +17,11 @@ import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-class ReminderTask(val reminder: Reminder) : Runnable {
+class ReminderTask(val quasicolon: Quasicolon, val reminder: Reminder) : () -> Unit {
     private val logger = LoggerFactory.getLogger(ReminderTask::class.java)
 
-    override fun run() = runBlocking {
-        val channel = Quasicolon.jda.openPrivateChannelById(reminder.user).await() ?: run {
+    override fun invoke() = runBlocking {
+        val channel = quasicolon.jda.openPrivateChannelById(reminder.user).await() ?: run {
             logger.warn("Unable to find user {} to send reminder", reminder.user)
             return@runBlocking
         }
@@ -38,11 +38,11 @@ class ReminderTask(val reminder: Reminder) : Runnable {
             .channel(reminder.where.channel)
             .guild(reminder.where.guild)
             .build()
-        val text = Text.single(botKey(key), args).asString(context).awaitSingle()
+        val text = Text.single(botKey(key), *args.toTypedArray()).asString(context).awaitSingle()
 
         try {
             channel.sendMessage(text).await()
-            Quasicolon.databaseManager.collection(Reminder::class.java)
+            quasicolon.databaseManager.collection(Reminder::class.java)
                 .deleteOne(eq("_id", reminder.id))
                 .awaitSingle()
         } catch (e: ErrorResponseException) {
@@ -51,6 +51,6 @@ class ReminderTask(val reminder: Reminder) : Runnable {
     }
 
     fun schedule() {
-        Quasicolon.executor.schedule(this, Duration.between(Instant.now(), reminder.end).seconds, TimeUnit.SECONDS)
+        quasicolon.schedule(Duration.between(Instant.now(), reminder.end).seconds, TimeUnit.SECONDS, this)
     }
 }

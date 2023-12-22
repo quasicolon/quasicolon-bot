@@ -3,18 +3,20 @@ package dev.qixils.quasicolon.bot
 import dev.qixils.quasicolon.bot.time.ReminderCommand
 import dev.qixils.quasicord.Quasicord
 import net.dv8tion.jda.api.entities.Activity
+import java.time.Duration
 import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 
 const val namespace: String = "quasicolon"
 
 fun main(args: Array<String>) {
-    Quasicolon.jda.awaitShutdown()
+    Quasicolon().jda.awaitShutdown()
 }
 
-object Quasicolon : Quasicord(
+class Quasicolon : Quasicord(
     namespace,
     listOf(Locale.ENGLISH),
 
@@ -23,10 +25,28 @@ object Quasicolon : Quasicord(
     Activity.listening("/help"),
     null
 ) {
-    val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(6)
+    private val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(6)
 
     override fun registerCommands() {
         super.registerCommands()
         commandManager.discoverCommands(ReminderCommand(this))
+    }
+
+    fun schedule(duration: Long, unit: TimeUnit, runnable: () -> Unit) {
+        executor.schedule({
+            try {
+                runnable()
+            } catch (e: Exception) {
+                logger.warn("Failed to execute scheduled task", e)
+            }
+        }, duration, unit)
+    }
+
+    fun schedule(duration: Duration, runnable: () -> Unit) {
+        schedule(duration.toMillis(), TimeUnit.MILLISECONDS, runnable)
+    }
+
+    fun schedule(duration: kotlin.time.Duration, runnable: () -> Unit) {
+        schedule(duration.inWholeMilliseconds, TimeUnit.MILLISECONDS, runnable)
     }
 }

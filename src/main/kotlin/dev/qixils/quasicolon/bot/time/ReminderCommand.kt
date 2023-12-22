@@ -10,6 +10,7 @@ import dev.qixils.quasicord.decorators.slash.SlashCommand
 import dev.qixils.quasicord.decorators.slash.SlashSubCommand
 import dev.qixils.quasicord.locale.Context
 import dev.qixils.quasicord.text.Text
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -22,7 +23,7 @@ class ReminderCommand(val quasicolon: Quasicolon) {
 
     init {
         Flux.from(quasicolon.databaseManager.collection(Reminder::class.java).find())
-            .subscribe { reminder -> ReminderTask(reminder).schedule() }
+            .subscribe { reminder -> ReminderTask(quasicolon, reminder).schedule() }
     }
 
     @SlashSubCommand("set")
@@ -35,9 +36,8 @@ class ReminderCommand(val quasicolon: Quasicolon) {
             .asString(Context.fromInteraction(interaction))
             .awaitSingle()
         val message = interaction.reply(text).await().retrieveOriginal().await()
-        // TODO: something is failing beyond this point
-        val reminder = Reminder(message.author.idLong, Instant.now(), `when`, MessageLink.of(message), note)
-        Quasicolon.databaseManager.collection(Reminder::class.java).insertOne(reminder)
-        ReminderTask(reminder).schedule()
+        val reminder = Reminder(interaction.user.idLong, Instant.now(), `when`, MessageLink.of(message), note)
+        quasicolon.databaseManager.collection(Reminder::class.java).insertOne(reminder).awaitSingle()
+        ReminderTask(quasicolon, reminder).schedule()
     }
 }
