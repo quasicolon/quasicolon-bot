@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
 
 class Quasicolon : Quasicord(
     namespace,
-    listOf(Locale.ENGLISH),
+    Locale.ENGLISH,
 
     // todo: why is this all coded like this
     Path("."),

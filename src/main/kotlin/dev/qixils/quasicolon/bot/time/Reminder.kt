@@ -11,13 +11,14 @@ import org.jetbrains.annotations.ApiStatus
 import java.time.Instant
 
 @CollectionName("reminder")
-class Reminder @BsonCreator @ApiStatus.Internal constructor(
+@JvmRecord
+data class Reminder @ApiStatus.Internal constructor(
     @field:BsonId @param:BsonId val id: ObjectId,
-    @param:BsonProperty("user") val user: Long,
-    @param:BsonProperty("start") val start: Instant,
-    @param:BsonProperty("end") val end: Instant,
-    @param:BsonProperty("where") val where: MessageLink,
-    @param:BsonProperty("note") val note: String?
+    val user: Long,
+    val start: Instant,
+    val end: Instant,
+    val where: MessageLink,
+    val note: String?
 ) {
     constructor(user: Long, start: Instant, end: Instant, where: MessageLink, note: String?)
             : this(ObjectId.get(), user, start, end, where, note)
