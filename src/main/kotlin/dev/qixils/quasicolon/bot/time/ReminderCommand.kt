@@ -13,13 +13,19 @@ import dev.qixils.quasicord.text.Text
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.runBlocking
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction
 import reactor.core.publisher.Flux
 import java.time.Instant
 
 @SlashCommand("remind")
-class ReminderCommand(val quasicolon: Quasicolon) {
+class ReminderCommand(private val quasicolon: Quasicolon) {
+
+    companion object {
+        private const val JOIN_ID = "reminder_join"
+    }
 
     init {
         Flux.from(quasicolon.databaseManager.collection(Reminder::class.java).find())
@@ -39,5 +45,12 @@ class ReminderCommand(val quasicolon: Quasicolon) {
         val reminder = Reminder(interaction.user.idLong, Instant.now(), `when`, MessageLink.of(message), note)
         quasicolon.databaseManager.collection(Reminder::class.java).insertOne(reminder).awaitSingle()
         ReminderTask(quasicolon, reminder).schedule()
+    }
+
+    @SubscribeEvent
+    fun onButton(event: ButtonInteractionEvent) {
+        if (event.componentId != JOIN_ID) return
+
+        // TODO
     }
 }
