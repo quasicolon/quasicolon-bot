@@ -19,3 +19,4 @@ en:
         body: "What rule was violated?"
         buttons:
           cancel: "Cancel Report"
+        timeout: "This report has timed out. Please start a new report."

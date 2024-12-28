@@ -1,5 +1,6 @@
 package dev.qixils.quasicolon.bot
 
+import dev.qixils.quasicolon.bot.moderation.ReportCommand
 import dev.qixils.quasicolon.bot.time.ReminderCommand
 import dev.qixils.quasicord.Quasicord
 import net.dv8tion.jda.api.entities.Activity
@@ -30,6 +31,7 @@ class Quasicolon : Quasicord(
     override fun registerCommands() {
         super.registerCommands()
         commandManager.discoverCommands(ReminderCommand(this))
+        commandManager.discoverCommands(ReportCommand(this))
     }
 
     fun schedule(duration: Long, unit: TimeUnit, runnable: () -> Unit) {
