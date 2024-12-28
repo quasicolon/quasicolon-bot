@@ -12,7 +12,7 @@ val Interaction.context: Context
     get() = Context.fromInteraction(this)
 
 suspend fun Context.text(value: Key, vararg args: Any?): String =
-    Text.single(value, args).asString(this).awaitSingle()
+    Text.single(value, *args).asString(this).awaitSingle()
 
 suspend fun Context.text(value: String, vararg args: Any?): String =
-    text(botKey(value), args)
+    text(botKey(value), *args)
