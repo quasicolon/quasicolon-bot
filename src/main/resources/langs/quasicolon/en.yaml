@@ -10,3 +10,12 @@ en:
   "remind.set.output.ok": "Alright, I''ll remind you {0} on {1}."
   "remind.set.output.dm": "[{0}](<{1}>), you asked me to remind you:\n>>> {2}"
   "remind.set.output.dm-no-note": "[{0}](<{1}>), you asked me to send you a reminder with no note."
+
+  report_msg:
+    output:
+      rules:
+        other: "Other"
+      dm:
+        body: "What rule was violated?"
+        buttons:
+          cancel: "Cancel Report"

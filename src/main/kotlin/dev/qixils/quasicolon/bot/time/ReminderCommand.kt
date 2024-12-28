@@ -1,9 +1,7 @@
 package dev.qixils.quasicolon.bot.time
 
 import dev.minn.jda.ktx.coroutines.await
-import dev.qixils.quasicolon.bot.MessageLink
-import dev.qixils.quasicolon.bot.Quasicolon
-import dev.qixils.quasicolon.bot.botKey
+import dev.qixils.quasicolon.bot.*
 import dev.qixils.quasicord.decorators.option.Contextual
 import dev.qixils.quasicord.decorators.option.Option
 import dev.qixils.quasicord.decorators.slash.SlashCommand
@@ -34,15 +32,14 @@ class ReminderCommand(private val quasicolon: Quasicolon) {
 
     @SlashSubCommand("set")
     fun setReminder(
-        @Option(value = "when", type = OptionType.STRING) `when`: Instant,
+        @Option(value = "when", type = OptionType.STRING) instant: Instant,
         @Option(value = "note", required = false, type = OptionType.STRING) note: String?,
-        @Contextual interaction: SlashCommandInteraction
+        @Contextual interaction: SlashCommandInteraction,
+        @Contextual ctx: Context,
     ) = runBlocking {
-        val text = Text.single(botKey("remind.set.output.ok"), Timestamp.RELATIVE.format(`when`), Timestamp.SHORT_FULL.format(`when`))
-            .asString(Context.fromInteraction(interaction))
-            .awaitSingle()
+        val text = ctx.text("remind.set.output.ok", Timestamp.RELATIVE.format(instant), Timestamp.SHORT_FULL.format(instant))
         val message = interaction.reply(text).await().retrieveOriginal().await()
-        val reminder = Reminder(interaction.user.idLong, Instant.now(), `when`, MessageLink.of(message), note)
+        val reminder = Reminder(interaction.user.idLong, Instant.now(), instant, MessageLink.of(message), note)
         quasicolon.databaseManager.collection(Reminder::class.java).insertOne(reminder).awaitSingle()
         ReminderTask(quasicolon, reminder).schedule()
     }
