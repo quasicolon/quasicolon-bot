@@ -2,21 +2,18 @@ package dev.qixils.quasicolon.bot.moderation
 
 import com.mongodb.client.model.Filters
 import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.events.listener
 import dev.minn.jda.ktx.generics.getChannel
 import dev.minn.jda.ktx.interactions.components.*
 import dev.minn.jda.ktx.messages.Embed
-import dev.minn.jda.ktx.messages.editMessage_
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import dev.qixils.quasicolon.bot.*
 import dev.qixils.quasicord.decorators.ContextCommand
 import dev.qixils.quasicord.locale.Context
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitSingle
-import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -66,7 +63,7 @@ class ReportCommand(private val quasicolon: Quasicolon) {
             ephemeral = true,
         ).await()
 
-        pendingReports[reply.idLong] = interaction // TODO: praying this is the right ID?
+        pendingReports[reply.idLong] = interaction
         // TODO: timeout after 15mins? some jda docs mentioned discord might not keep hooks past this time
     }
 

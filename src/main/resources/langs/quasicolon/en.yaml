@@ -10,6 +10,9 @@ en:
   "remind.set.output.ok": "Alright, I''ll remind you {0} on {1}."
   "remind.set.output.dm": "[{0}](<{1}>), you asked me to remind you:\n>>> {2}"
   "remind.set.output.dm-no-note": "[{0}](<{1}>), you asked me to send you a reminder with no note."
+  "remind.set.output.buttons.join": "Join Reminder"
+  "remind.join.output.elapsed": "This reminder has elapsed and can no longer be joined."
+  "remind.join.output.ok": "Alright, I''ll remind you {0} on {1}."
 
   report_msg:
     output:
