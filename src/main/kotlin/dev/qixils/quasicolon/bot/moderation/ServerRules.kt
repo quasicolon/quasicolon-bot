@@ -20,4 +20,7 @@ data class ServerRules @ApiStatus.Internal constructor(
 ) {
     constructor(guild: Long, items: MutableList<ServerRule>)
             : this(ObjectId.get(), guild, items)
+
+    constructor(guild: Long)
+            : this(guild, mutableListOf())
 }

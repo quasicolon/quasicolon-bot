@@ -2,6 +2,7 @@ package dev.qixils.quasicolon.bot
 
 import dev.qixils.quasicolon.bot.moderation.ClearCommand
 import dev.qixils.quasicolon.bot.moderation.ReportCommand
+import dev.qixils.quasicolon.bot.moderation.RulesCommand
 import dev.qixils.quasicolon.bot.time.ReminderCommand
 import dev.qixils.quasicord.Quasicord
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +38,7 @@ class Quasicolon : Quasicord(
         commandManager.discoverCommands(ReminderCommand(this))
         commandManager.discoverCommands(ReportCommand(this))
         commandManager.discoverCommands(ClearCommand(this))
+        commandManager.discoverCommands(RulesCommand(this))
     }
 
     fun schedule(duration: Long, unit: TimeUnit, runnable: () -> Unit) {

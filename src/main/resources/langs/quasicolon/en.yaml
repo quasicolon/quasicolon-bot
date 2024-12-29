@@ -37,3 +37,16 @@ en:
   clear:
     output:
       ok: "Successfully deleted {0} messages."
+
+  rules:
+    output:
+      none: "This server has not configured any rules."
+
+  manage_rules:
+    add:
+      output:
+        ok: "Successfully added a new server rule."
+    set:
+      output:
+        ok: "Successfully updated a server rule."
+        none: "The requested server rule could not be found."

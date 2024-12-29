@@ -32,11 +32,11 @@ class ReportCommand(private val quasicolon: Quasicolon) {
         interaction: MessageContextInteraction,
         ctx: Context,
     ) { quasicolon.scope.launch {
-        if (ctx.guild() == 0L) return@launch
+        if (interaction.guild == null) return@launch
 
         val msg = interaction.target
 
-        val rules = quasicolon.databaseManager.getAllBy(Filters.eq("guild", ctx.guild()), ServerRules::class.java).awaitSingle()
+        val rules = quasicolon.databaseManager.getAllBy(Filters.eq("guild", interaction.guild!!.idLong), ServerRules::class.java).awaitSingle()
 
         val reply = interaction.reply_(
             ctx.text("report_msg.output.dm.body"),
@@ -91,11 +91,11 @@ class ReportCommand(private val quasicolon: Quasicolon) {
         val author = target.author
         val reporter = interaction.user
 
-        val channel = async { interaction.guild!!.getChannel<GuildMessageChannel>(quasicolon.databaseManager.getAllByEquals(mapOf("guild" to ctx.guild(), "type" to ChannelType.MODMAIL), ChannelConfig::class.java).awaitSingle().item)!! } // todo error
+        val channel = async { interaction.guild!!.getChannel<GuildMessageChannel>(quasicolon.databaseManager.getAllByEquals(mapOf("guild" to interaction.guild!!.idLong, "type" to ChannelType.MODMAIL), ChannelConfig::class.java).awaitSingle().item)!! } // todo error
         val ctxChannelAsync = async { channel.await().context }
 
         val rule = (if (ruleId != -1) {
-            val rules = quasicolon.databaseManager.getAllByEquals(mapOf("guild" to ctx.guild()), ServerRules::class.java).awaitSingle()
+            val rules = quasicolon.databaseManager.getAllByEquals(mapOf("guild" to interaction.guild!!.idLong), ServerRules::class.java).awaitSingle()
             if (ruleId < rules.items.size) rules.items[ruleId].label
             else null
         } else null) ?: ctxChannelAsync.await().text("report_msg.output.rules.other")
