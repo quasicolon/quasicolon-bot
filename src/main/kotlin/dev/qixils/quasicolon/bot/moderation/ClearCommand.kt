@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.concurrent.CompletableFuture
 
 @SlashCommand("clear", guildOnly = true)
+@DefaultPermissions(Permission.MESSAGE_MANAGE)
 class ClearCommand(private val quasicolon: Quasicolon) {
 
     companion object {
@@ -28,7 +29,6 @@ class ClearCommand(private val quasicolon: Quasicolon) {
     }
 
     @SlashSubCommand("count")
-    @DefaultPermissions(Permission.MESSAGE_MANAGE)
     fun clearCount(
         @Option(value = "amount", type = OptionType.INTEGER) amount: Int,
         @Contextual interaction: SlashCommandInteractionEvent,
@@ -37,14 +37,14 @@ class ClearCommand(private val quasicolon: Quasicolon) {
         val channel = interaction.channel as? GuildMessageChannel ?: return@launch
         // TODO: bot perm check
         val hook = async { interaction.deferReply(true).await() }
+        var queued = 0
 
         coroutineScope {
             val bulkQueue = mutableListOf<Message>()
             val history = interaction.channel.history
-            var queued = 0
             while (queued < amount) {
                 val toFetch = (amount - queued).coerceAtMost(PURGE_AMOUNT)
-                queued -= toFetch
+                queued += toFetch
                 bulkQueue.addAll(history.retrievePast(toFetch).await())
                 if (bulkQueue.size >= PURGE_AMOUNT) {
                     val toDelete = bulkQueue.removeFirst(PURGE_AMOUNT)
@@ -54,6 +54,37 @@ class ClearCommand(private val quasicolon: Quasicolon) {
             launch { CompletableFuture.allOf(*channel.purgeMessages(bulkQueue).toTypedArray()).await() }
         }
 
-        hook.await().editOriginal(ctx.text("clear.output.ok")).await()
+        hook.await().editOriginal(ctx.text("clear.output.ok", queued)).await()
+    } }
+
+    @SlashSubCommand("after")
+    fun clearAfter(
+        @Option(value = "when", type = OptionType.INTEGER) snowflake: Long,
+        @Contextual interaction: SlashCommandInteractionEvent,
+        @Contextual ctx: Context,
+    ) { quasicolon.scope.launch {
+        val channel = interaction.channel as? GuildMessageChannel ?: return@launch
+        // TODO: bot perm check
+        val hook = async { interaction.deferReply(true).await() }
+        var queued = 0
+
+        coroutineScope {
+            val bulkQueue = mutableListOf<Message>()
+            val history = interaction.channel.history
+            while (true) {
+                val fetched = history.retrievePast(PURGE_AMOUNT).await()
+                val filtered = fetched.takeWhile { it.idLong >= snowflake }
+                queued += filtered.size
+                bulkQueue.addAll(filtered)
+                if (filtered.size != fetched.size) break
+                if (bulkQueue.size >= PURGE_AMOUNT) {
+                    val toDelete = bulkQueue.removeFirst(PURGE_AMOUNT)
+                    launch { CompletableFuture.allOf(*channel.purgeMessages(toDelete).toTypedArray()).await() }
+                }
+            }
+            launch { CompletableFuture.allOf(*channel.purgeMessages(bulkQueue).toTypedArray()).await() }
+        }
+
+        hook.await().editOriginal(ctx.text("clear.output.ok", queued)).await()
     } }
 }
