@@ -13,6 +13,7 @@ en:
   "remind.set.output.buttons.join": "Join Reminder"
   "remind.join.output.elapsed": "This reminder has elapsed and can no longer be joined."
   "remind.join.output.ok": "Alright, I''ll remind you {0} on {1}."
+  "remind.join.output.already-joined": "You''ve already joined this reminder."
 
   report_msg:
     # TODO: name(/desc?)
