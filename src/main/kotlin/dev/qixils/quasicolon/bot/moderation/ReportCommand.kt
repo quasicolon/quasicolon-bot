@@ -75,7 +75,7 @@ class ReportCommand(private val quasicolon: Quasicolon) {
         if (interaction.componentId != "report_rule") return@launch
 
         val reply = async { interaction.deferReply(false).await() }
-        launch { interaction.editComponents(interaction.message.components.asDisabled()).await() } // TODO: skip jump? (lol)
+        launch { interaction.hook.editOriginalComponents(interaction.message.components.asDisabled()).await() } // TODO: skip jump? (lol)
 
         val ctx = interaction.context
 
