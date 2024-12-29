@@ -31,7 +31,7 @@ class ReportCommand(private val quasicolon: Quasicolon) {
     fun onReport(
         interaction: MessageContextInteraction,
         ctx: Context,
-    ) = quasicolon.scope.launch {
+    ) { quasicolon.scope.launch {
         if (ctx.guild() == 0L) return@launch
 
         val msg = interaction.target
@@ -65,12 +65,12 @@ class ReportCommand(private val quasicolon: Quasicolon) {
 
         pendingReports[reply.idLong] = interaction
         // TODO: timeout after 15mins? some jda docs mentioned discord might not keep hooks past this time
-    }
+    } }
 
     @SubscribeEvent
     fun onSelectRule(
         interaction: StringSelectInteractionEvent,
-    ) = quasicolon.scope.launch {
+    ) { quasicolon.scope.launch {
         // TODO: support cancel
         if (interaction.componentId != "report_rule") return@launch
 
@@ -129,5 +129,5 @@ class ReportCommand(private val quasicolon: Quasicolon) {
         ))
 
         reply.await().editOriginal(ctx.text("report_msg.output.dm.submitted"))
-    }
+    } }
 }
