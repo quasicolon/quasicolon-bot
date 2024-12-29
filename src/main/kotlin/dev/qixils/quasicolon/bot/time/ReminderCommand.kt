@@ -65,7 +65,7 @@ class ReminderCommand(private val quasicolon: Quasicolon) {
         val reminder = quasicolon.databaseManager.getAllBy(Filters.eq("where.message", event.messageIdLong), Reminder::class.java).awaitFirstOrNull()
 
         if (reminder == null) {
-            launch { event.hook.editOriginalComponents(event.message.components.asDisabled()).await() }
+            launch { event.hook.editOriginalComponents(event.message.components.asDisabled()).await() } // todo: wrong order?? see val screenshot
             launch { event.reply_(ctx.text("remind.join.output.elapsed"), ephemeral = true).await() }
             return@launch
         }

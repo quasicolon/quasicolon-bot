@@ -24,3 +24,20 @@ suspend fun Context.text(value: Key, vararg args: Any?): String =
 
 suspend fun Context.text(value: String, vararg args: Any?): String =
     text(botKey(value), *args)
+
+fun <E> MutableList<E>.removeFirst(n: Int): List<E> {
+    require(n >= 0) { "Requested element count $n is less than zero." }
+    if (n == 0) return emptyList()
+    if (n >= size) {
+        val newList = toList()
+        clear()
+        return newList
+    }
+    if (n == 1) return listOf(removeFirst())
+
+    val list = ArrayList<E>(n)
+    while (list.size < n) {
+        list.add(removeFirst())
+    }
+    return list
+}

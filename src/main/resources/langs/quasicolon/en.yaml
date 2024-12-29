@@ -15,6 +15,7 @@ en:
   "remind.join.output.ok": "Alright, I''ll remind you {0} on {1}."
 
   report_msg:
+    # TODO: name(/desc?)
     output:
       rules:
         other: "Other"
@@ -32,3 +33,7 @@ en:
         reporter: "Reported By"
         user: "{0} ({1} // {2})"
         rule: "Rule Broken"
+
+  clear:
+    output:
+      ok: "Successfully deleted {0} messages."
