@@ -33,7 +33,7 @@ class ClearCommand(private val quasicolon: Quasicolon) {
         @Option(value = "amount", type = OptionType.INTEGER) amount: Int,
         @Contextual interaction: SlashCommandInteractionEvent,
         @Contextual ctx: Context,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         val channel = interaction.channel as? GuildMessageChannel ?: return@launch
         // TODO: bot perm check
         val hook = async { interaction.deferReply(true).await() }
@@ -62,7 +62,7 @@ class ClearCommand(private val quasicolon: Quasicolon) {
         @Option(value = "when", type = OptionType.INTEGER) snowflake: Long,
         @Contextual interaction: SlashCommandInteractionEvent,
         @Contextual ctx: Context,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         val channel = interaction.channel as? GuildMessageChannel ?: return@launch
         // TODO: bot perm check
         val hook = async { interaction.deferReply(true).await() }

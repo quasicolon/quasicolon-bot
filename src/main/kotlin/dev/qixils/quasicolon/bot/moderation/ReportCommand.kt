@@ -31,7 +31,7 @@ class ReportCommand(private val quasicolon: Quasicolon) {
     fun onReport(
         interaction: MessageContextInteraction,
         ctx: Context,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         if (interaction.guild == null) return@launch
 
         val msg = interaction.target
@@ -70,7 +70,7 @@ class ReportCommand(private val quasicolon: Quasicolon) {
     @SubscribeEvent
     fun onSelectRule(
         interaction: StringSelectInteractionEvent,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         // TODO: support cancel
         if (interaction.componentId != "report_rule") return@launch
 

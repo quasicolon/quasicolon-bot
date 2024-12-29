@@ -30,15 +30,25 @@ class Quasicolon : Quasicord(
     Activity.listening("/help"),
     null
 ) {
-    private val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(8)
-    val scope = CoroutineScope(Dispatchers.Default)
+    companion object {
+        private val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(8)
+        val scope = CoroutineScope(Dispatchers.Default)
+    }
+
+    private fun discover(supplier: () -> Any) {
+        try {
+            commandManager.discoverCommands(supplier.invoke())
+        } catch (e: Exception) {
+            logger.error("Failed to register command", e)
+        }
+    }
 
     override fun registerCommands() {
         super.registerCommands()
-        commandManager.discoverCommands(ReminderCommand(this))
-        commandManager.discoverCommands(ReportCommand(this))
-        commandManager.discoverCommands(ClearCommand(this))
-        commandManager.discoverCommands(RulesCommand(this))
+        discover { ReminderCommand(this) }
+        discover { ReportCommand(this) }
+        discover { ClearCommand(this) }
+        discover { RulesCommand(this) }
     }
 
     fun schedule(duration: Long, unit: TimeUnit, runnable: () -> Unit) {

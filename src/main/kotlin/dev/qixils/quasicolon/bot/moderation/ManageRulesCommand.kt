@@ -29,7 +29,7 @@ class ManageRulesCommand(private val quasicolon: Quasicolon) {
         @Option(value = "description", type = OptionType.STRING, required = false) description: String?,
         @Contextual interaction: SlashCommandInteractionEvent,
         @Contextual ctx: Context,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         val hook = async { interaction.deferReply(true).await() }
 
         val filter = Filters.eq("guild", interaction.guild!!.idLong)
@@ -50,7 +50,7 @@ class ManageRulesCommand(private val quasicolon: Quasicolon) {
         @Option(value = "description", type = OptionType.STRING, required = false) description: String?,
         @Contextual interaction: SlashCommandInteractionEvent,
         @Contextual ctx: Context,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         val hook = async { interaction.deferReply(true).await() }
 
         val filter = Filters.eq("guild", interaction.guild!!.idLong)

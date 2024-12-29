@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 class ReminderTask(val quasicolon: Quasicolon, val originalReminder: Reminder) : () -> Unit {
     private val logger = LoggerFactory.getLogger(ReminderTask::class.java)
 
-    override fun invoke() { quasicolon.scope.launch {
+    override fun invoke() { Quasicolon.scope.launch {
         val reminder = quasicolon.databaseManager.getById(originalReminder.id, Reminder::class.java).awaitSingle()
 
         val channel = quasicolon.jda.openPrivateChannelById(reminder.user).await() ?: run {

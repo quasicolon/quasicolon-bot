@@ -44,7 +44,7 @@ class ReminderCommand(private val quasicolon: Quasicolon) {
         @Option(value = "note", required = false, type = OptionType.STRING) note: String?,
         @Contextual interaction: SlashCommandInteraction,
         @Contextual ctx: Context,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         val text = ctx.text("remind.set.output.ok", Timestamp.RELATIVE.format(instant), Timestamp.SHORT_FULL.format(instant))
         val message = interaction.reply_(text, components = listOf(row(button(
             JOIN_ID,
@@ -58,7 +58,7 @@ class ReminderCommand(private val quasicolon: Quasicolon) {
     } }
 
     @SubscribeEvent
-    fun onButton(event: ButtonInteractionEvent) { quasicolon.scope.launch {
+    fun onButton(event: ButtonInteractionEvent) { Quasicolon.scope.launch {
         if (event.componentId != JOIN_ID) return@launch
         val ctx = event.context
 

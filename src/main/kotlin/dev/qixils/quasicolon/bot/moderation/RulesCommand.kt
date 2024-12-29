@@ -17,7 +17,7 @@ class RulesCommand(private val quasicolon: Quasicolon) {
     fun listRules(
         @Contextual interaction: SlashCommandInteractionEvent,
         @Contextual ctx: Context,
-    ) { quasicolon.scope.launch {
+    ) { Quasicolon.scope.launch {
         val hook = async { interaction.deferReply(true).await() }
         val rules = quasicolon.databaseManager.getAllByEquals(mapOf("guild" to interaction.guild!!.idLong), ServerRules::class.java).awaitFirstOrNull()
         if (rules == null || rules.items.isEmpty()) {
