@@ -3,6 +3,8 @@ package dev.qixils.quasicolon.bot
 import dev.qixils.quasicolon.bot.moderation.ReportCommand
 import dev.qixils.quasicolon.bot.time.ReminderCommand
 import dev.qixils.quasicord.Quasicord
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import net.dv8tion.jda.api.entities.Activity
 import java.time.Duration
 import java.util.Locale
@@ -26,7 +28,8 @@ class Quasicolon : Quasicord(
     Activity.listening("/help"),
     null
 ) {
-    private val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(6)
+    private val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(8)
+    val scope = CoroutineScope(Dispatchers.Default)
 
     override fun registerCommands() {
         super.registerCommands()

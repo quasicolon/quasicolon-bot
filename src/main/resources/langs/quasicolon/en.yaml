@@ -16,7 +16,16 @@ en:
       rules:
         other: "Other"
       dm:
-        body: "What rule was violated?"
+        body: "What rule does the reported post violate?"
         buttons:
+          placeholder: "Select a rule"
           cancel: "Cancel Report"
+          jump: "Jump to Message"
         timeout: "This report has timed out. Please start a new report."
+        submitted: "Your report has been successfully submitted to the moderation team for review."
+      embed:
+        title: "Post Reported"
+        poster: "Posted By"
+        reporter: "Reported By"
+        user: "{0} ({1} // {2})"
+        rule: "Rule Broken"
