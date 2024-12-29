@@ -1,6 +1,7 @@
 package dev.qixils.quasicolon.bot.time
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Indexes
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.interactions.components.button
@@ -18,6 +19,7 @@ import dev.qixils.quasicord.locale.Context
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -36,6 +38,14 @@ class ReminderCommand(private val quasicolon: Quasicolon) {
         quasicolon.databaseManager
             .getAll(Reminder::class.java)
             .subscribe { reminder -> ReminderTask(quasicolon, reminder).schedule() }
+
+        // TODO: allow init functions to be futures in quasicord-land
+        runBlocking {
+            // For "join reminder", we query reminders by message
+            quasicolon.databaseManager.collection(Reminder::class.java)
+                .createIndex(Indexes.ascending("where.message"))
+                .awaitSingle()
+        }
     }
 
     @SlashSubCommand("set")
@@ -61,6 +71,18 @@ class ReminderCommand(private val quasicolon: Quasicolon) {
     fun onButton(event: ButtonInteractionEvent) { Quasicolon.scope.launch {
         if (event.componentId != JOIN_ID) return@launch
         val ctx = event.context
+
+        val existingReminder = quasicolon.databaseManager.getAllBy(Filters.and(
+            Filters.eq("where.message", event.messageIdLong),
+            Filters.eq("user", event.user.idLong)
+        ), Reminder::class.java).awaitFirstOrNull()
+
+        // TODO: It's theoretically possible for a user to mash the join button twice and get past this check, but the
+        // database should be fast enough that that's not an issue and it's not a big deal if it does happen.
+        if (existingReminder != null) {
+            launch { event.reply_(ctx.text("remind.join.output.already-joined"), ephemeral = true).await() }
+            return@launch
+        }
 
         val reminder = quasicolon.databaseManager.getAllBy(Filters.eq("where.message", event.messageIdLong), Reminder::class.java).awaitFirstOrNull()
 
