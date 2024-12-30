@@ -1,4 +1,12 @@
 en:
+  log:
+    user: "{0} ({1})"
+    join: "{0} joined the server."
+    quit: "{0} left the server."
+    role_join: "{0} has received the role {1}"
+    role_quit: "{0} has lost the role {1}"
+    name: "{0} changed their name from {1} to {2}"
+
   "remind.name": reminder
   "remind.description": Reminders for you in the future
   "remind.set.name": set

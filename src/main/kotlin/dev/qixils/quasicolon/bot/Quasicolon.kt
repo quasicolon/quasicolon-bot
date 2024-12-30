@@ -1,13 +1,18 @@
 package dev.qixils.quasicolon.bot
 
+import dev.minn.jda.ktx.generics.getChannel
 import dev.qixils.quasicolon.bot.moderation.ClearCommand
+import dev.qixils.quasicolon.bot.moderation.ModLog
 import dev.qixils.quasicolon.bot.moderation.ReportCommand
 import dev.qixils.quasicolon.bot.moderation.RulesCommand
 import dev.qixils.quasicolon.bot.time.ReminderCommand
 import dev.qixils.quasicord.Quasicord
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
@@ -35,20 +40,26 @@ class Quasicolon : Quasicord(
         val scope = CoroutineScope(Dispatchers.Default)
     }
 
-    private fun discover(supplier: () -> Any) {
+    private fun discover(error: String, runnable: () -> Unit) {
         try {
-            commandManager.discoverCommands(supplier.invoke())
+            runnable.invoke()
         } catch (e: Exception) {
-            logger.error("Failed to register command", e)
+            logger.error(error, e)
         }
+    }
+    private fun discoverEvent(supplier: () -> Any) = discover("Failed to register events") { jda.addEventListener(supplier) }
+    private fun discoverCommand(supplier: () -> Any) = discover("Failed to register command") { commandManager.discoverCommands(supplier) }
+
+    init {
+        discoverEvent { ModLog(this) }
     }
 
     override fun registerCommands() {
         super.registerCommands()
-        discover { ReminderCommand(this) }
-        discover { ReportCommand(this) }
-        discover { ClearCommand(this) }
-        discover { RulesCommand(this) }
+        discoverCommand { ReminderCommand(this) }
+        discoverCommand { ReportCommand(this) }
+        discoverCommand { ClearCommand(this) }
+        discoverCommand { RulesCommand(this) }
     }
 
     fun schedule(duration: Long, unit: TimeUnit, runnable: () -> Unit) {
@@ -67,5 +78,11 @@ class Quasicolon : Quasicord(
 
     fun schedule(duration: kotlin.time.Duration, runnable: () -> Unit) {
         schedule(duration.inWholeMilliseconds, TimeUnit.MILLISECONDS, runnable)
+    }
+
+    suspend fun getChannel(guild: Guild, channelType: ChannelType): GuildMessageChannel? {
+        val filter = mapOf("guild" to guild.idLong, "type" to channelType)
+        val entry = databaseManager.getAllByEquals(filter, ChannelConfig::class.java).awaitFirstOrNull() ?: return null
+        return guild.getChannel<GuildMessageChannel>(entry.item)
     }
 }

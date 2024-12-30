@@ -2,18 +2,19 @@ package dev.qixils.quasicolon.bot.moderation
 
 import com.mongodb.client.model.Filters
 import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.generics.getChannel
 import dev.minn.jda.ktx.interactions.components.*
 import dev.minn.jda.ktx.messages.Embed
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
-import dev.qixils.quasicolon.bot.*
+import dev.qixils.quasicolon.bot.ChannelType
+import dev.qixils.quasicolon.bot.Quasicolon
+import dev.qixils.quasicolon.bot.context
+import dev.qixils.quasicolon.bot.text
 import dev.qixils.quasicord.decorators.ContextCommand
 import dev.qixils.quasicord.locale.Context
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitSingle
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -91,7 +92,7 @@ class ReportCommand(private val quasicolon: Quasicolon) {
         val author = target.author
         val reporter = interaction.user
 
-        val channel = async { interaction.guild!!.getChannel<GuildMessageChannel>(quasicolon.databaseManager.getAllByEquals(mapOf("guild" to interaction.guild!!.idLong, "type" to ChannelType.MODMAIL), ChannelConfig::class.java).awaitSingle().item)!! } // todo error
+        val channel = async { quasicolon.getChannel(interaction.guild!!, ChannelType.MODMAIL)!! } // todo error
         val ctxChannelAsync = async { channel.await().context }
 
         val rule = (if (ruleId != -1) {
