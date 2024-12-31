@@ -6,6 +6,14 @@ en:
     role_join: "{0} has received the role {1}"
     role_quit: "{0} has lost the role {1}"
     name: "{0} changed their name from {1} to {2}"
+    author: "Posted By"
+    edit:
+      header: "Message edited in {0}"
+      old: "Old Content"
+      new: "New Content"
+    delete:
+      header: "Message deleted in {0}"
+      deleter: "Likely Deleter"
 
   "remind.name": reminder
   "remind.description": Reminders for you in the future

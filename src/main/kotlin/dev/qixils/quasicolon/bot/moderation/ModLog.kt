@@ -1,6 +1,7 @@
 package dev.qixils.quasicolon.bot.moderation
 
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.messages.Embed
 import dev.minn.jda.ktx.messages.MessageCreate
 import dev.qixils.quasicolon.bot.*
 import dev.qixils.quasicord.locale.Context
@@ -99,12 +100,38 @@ class ModLog(private val quasicolon: Quasicolon) {
     @SubscribeEvent
     fun onEdit(event: MessageUpdateEvent) {
         if (!event.isFromGuild) return
-        // TODO
+        log(event.guild, ChannelType.MESSAGES) {
+            val ctx = it.context
+            MessageCreate(embeds = listOf(
+                Embed(
+                    title = ctx.text("log.edit.header"),
+                    url = event.message.jumpUrl,
+                    timestamp = event.message.timeCreated,
+                ) {
+                    field(name = ctx.text("log.author"), value = ctx.userString(event.author), inline = false)
+                    // TODO: field(name = ctx.text("log.edit.old"), value = event.messageOld.contentRaw, inline = false)
+                    field(name = ctx.text("log.edit.new"), value = event.message.contentRaw, inline = false)
+                }
+            ))
+        }
     }
 
     @SubscribeEvent
     fun onDelete(event: MessageDeleteEvent) {
         if (!event.isFromGuild) return
-        // TODO
+        log(event.guild, ChannelType.MESSAGES) {
+            val ctx = it.context
+            MessageCreate(embeds = listOf(
+                Embed(
+                    title = ctx.text("log.delete.header"),
+                    // TODO: description = event.message.contentRaw,
+                    // TODO: url = event.message.jumpUrl,
+                    // TODO: timestamp = event.message.timeCreated,
+                ) {
+                    // TODO: field(name = ctx.text("log.author"), value = ctx.userString(event.author), inline = false)
+                    // TODO: likely deleter
+                }
+            ))
+        }
     }
 }
